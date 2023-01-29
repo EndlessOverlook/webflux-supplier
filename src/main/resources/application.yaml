@@ -1,2 +1,36 @@
 server:
-  port: 8080
+  port: 8888
+spring:
+  application:
+    name: mall-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8080
+    gateway:
+      # 是否开启网关
+      enabled: true
+      discovery:
+        locator:
+          # 默认为false，设置为true开启通过微服务创建路由的功能，即可以通过微服务名访问服务
+          # http://localhost:8888/mall-order/order/findOrderByUserId/1
+          enabled: true
+      # 设置路由：路由ID、路由到微服务的URI、断言
+      routes:
+        - id: order_route  # 路由ID，全局唯一
+          uri: http://localhost:8020  # 目标微服务的请求地址和端口
+          filters:
+            - AddRequestHeader=X-Request-color, red  # 添加请求头
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "*"
+            allowed-methods:
+              - GET
+              - POST
+              - DELETE
+              - PUT
+              - OPTION
